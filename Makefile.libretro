@@ -357,10 +357,24 @@ else ifeq ($(platform), libnx)
     CFLAGS += -std=gnu11
     STATIC_LINKING = 1
 
-# emscripten
+# emscripten (asm.js)
 else ifeq ($(platform), emscripten)
-   TARGET := $(TARGET_NAME)_libretro_$(platform).bc
-   STATIC_LINKING = 1
+   TARGET := $(TARGET_NAME)_libretro_$(platform).js
+   CC = emcc
+   CXX = em++
+   AR = emar
+   fpic :=
+   SHARED :=
+   CFLAGS +=
+   CXXFLAGS +=
+   LDFLAGS += -s WASM=0 \
+      -s EXPORTED_FUNCTIONS="['_retro_api_version','_retro_get_system_info','_retro_get_system_av_info','_retro_init','_retro_deinit','_retro_set_environment','_retro_set_video_refresh','_retro_set_audio_sample','_retro_set_audio_sample_batch','_retro_set_input_poll','_retro_set_input_state','_retro_set_controller_port_device','_retro_reset','_retro_run','_retro_serialize_size','_retro_serialize','_retro_unserialize','_retro_cheat_reset','_retro_cheat_set','_retro_load_game','_retro_load_game_special','_retro_unload_game','_retro_get_region','_retro_get_memory_data','_retro_get_memory_size','_malloc','_free']" \
+      -s EXPORTED_RUNTIME_METHODS="['ccall','cwrap','setValue','getValue','addFunction','removeFunction','HEAPU8','HEAPU16','HEAP16']" \
+      -s INITIAL_MEMORY=67108864 \
+      -s ALLOW_MEMORY_GROWTH=1 \
+      -s MODULARIZE=1 \
+      -s EXPORT_NAME="GambatteModule" \
+      -s ALLOW_TABLE_GROWTH=1
 
 # RS90
 else ifeq ($(platform), rs90)
